@@ -16,6 +16,6 @@ type Lexer struct {
 }
 
 func CreateLexer (config LexerConfigJson) *Lexer {
-
+	
 
 }
