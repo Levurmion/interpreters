@@ -1,4 +1,4 @@
-package array_utils
+package arrays
 
 func Map[A any, O any](array []A, mapper func(A) O) []O {
 	result := make([]O, len(array))
