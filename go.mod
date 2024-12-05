@@ -1,3 +1,3 @@
-module github.com/Levurmion/interpreters
+module interpreters
 
 go 1.22.1

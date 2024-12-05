@@ -7,8 +7,8 @@ import (
 type Token struct {
 	Type string
 	Value string
-	Line int
-	Col int
+	Line uint
+	Col uint
 }
 
 type TokenConfigJson struct {
@@ -16,12 +16,13 @@ type TokenConfigJson struct {
 	Pattern string `json:"pattern"`
 }
 
-type TokenConfig struct {
-	Type string
-	Pattern *regexp.Regexp
-}
+// implementations for sort.Interface
+type TokenConfigJsonArr []TokenConfigJson
+func (arr TokenConfigJsonArr) Len() int 				{ return len(arr) }
+func (arr TokenConfigJsonArr) Swap(i int, j int) 		{ arr[i], arr[j] = arr[j], arr[i] }
+func (arr TokenConfigJsonArr) Less(i int, j int) bool 	{ return len(arr[i].Pattern) < len(arr[j].Pattern) }
 
-func (json *TokenConfigJson) CreateTokenConfig () *TokenConfig {
+func (json *TokenConfigJson) CreateTokenConfig() *TokenConfig {
 	if (len(json.Pattern) <= 0) {
 		return nil
 	} else if (json.Pattern[0] == '^') {
@@ -40,11 +41,16 @@ func (json *TokenConfigJson) CreateTokenConfig () *TokenConfig {
 	}
 }
 
+type TokenConfig struct {
+	Type string
+	Pattern *regexp.Regexp
+}
+
 /*
 Matches a `TokenConfig.Pattern` to the start of an input string. Returns `nil` if
 not match was found.
 */
-func (tokenConfig *TokenConfig) Match (input string) *Token {
+func (tokenConfig *TokenConfig) Match(input string) *Token {
 	match := tokenConfig.Pattern.FindStringSubmatch(input)
 	if (match == nil) {
 		return nil
@@ -52,8 +58,8 @@ func (tokenConfig *TokenConfig) Match (input string) *Token {
 		return &Token{
 			tokenConfig.Type,
 			match[0],
-			-1,
-			-1,
+			0,
+			0,
 		}
 	}
 }
