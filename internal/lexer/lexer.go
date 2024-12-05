@@ -1,7 +1,11 @@
 package lexer
 
 import (
+	"encoding/json"
+	"errors"
 	"interpreters/utilities/arrays"
+	"io"
+	"os"
 	"regexp"
 	"sort"
 )
@@ -46,6 +50,27 @@ func CreateLexer(config LexerConfigJson) *Lexer {
 		0,
 		0,
 	}
+}
+
+func CreateLexerFromJsonConfig(path string) (*Lexer, error) {
+	configFile, err := os.Open("./token-config.json")
+    if err != nil {
+        return nil, errors.New(`Error opening config file: ` + err.Error())
+    }
+    defer configFile.Close()
+
+	bytes, err := io.ReadAll(configFile)
+    if err != nil {
+        return nil, errors.New(`Error reading config file: ` + err.Error())
+    }
+
+	var data LexerConfigJson
+	err = json.Unmarshal(bytes, &data)
+    if err != nil {
+		return nil, errors.New(`Error unmarshalling config file: ` + err.Error())
+    }
+
+	return CreateLexer(data), nil
 }
 
 func (lex *Lexer) matchTokenGroup(tokenConfigs []*TokenConfig, inputStream string) *Token {

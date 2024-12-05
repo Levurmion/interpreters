@@ -1,0 +1,19 @@
+{
+  "symbolTokens": [
+    { "type": "{", "pattern": "(\\{)" },
+    { "type": "}", "pattern": "(\\})" },
+    { "type": "[", "pattern": "(\\[)" },
+    { "type": "]", "pattern": "(\\])" },
+    { "type": ":", "pattern": "(:)" },
+    { "type": ",", "pattern": "(,)" }
+  ],
+  "keywordTokens": [
+    { "type": "true", "pattern": "(true)" },
+    { "type": "false", "pattern": "(false)" },
+    { "type": "null", "pattern": "(null)" }
+  ],
+  "genericTokens": [
+    { "type": "str_lit", "pattern": "\"((\\.|[^\"])*)\"" },
+    { "type": "num_lit", "pattern": "(-?\\d+(\\.\\d+)?)" }
+  ]
+}
