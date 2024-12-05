@@ -1,6 +1,6 @@
 package lexer
 
-import "github.com/Levurmion/interpreters/utilities/arrays"
+import "github.com/Levurmion/utilities/arrays"
 
 type LexerConfigJson struct {
 	KeywordTokens []TokenConfigJson `json:"keywordTokens"`
