@@ -1,5 +1,7 @@
 package lexer
 
+import "github.com/Levurmion/interpreters/utilities/arrays"
+
 type LexerConfigJson struct {
 	KeywordTokens []TokenConfigJson `json:"keywordTokens"`
 	SymbolTokens []TokenConfigJson `json:"symbolTokens"`
@@ -16,6 +18,6 @@ type Lexer struct {
 }
 
 func CreateLexer (config LexerConfigJson) *Lexer {
-	
+	arrays.Map()
 
 }
