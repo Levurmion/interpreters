@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"interpreters/internal/symbols"
 	"interpreters/utilities/arrays"
 	"io"
 	"os"
@@ -133,6 +134,13 @@ func (lex *Lexer) Tokenize(input string) *[]*Token {
 		result = append(result, token)
 		processed += len(token.Value)
 	}
+
+	result = append(result, &Token{
+		symbols.Epsilon,
+		symbols.Epsilon,
+		0,
+		0,
+	})
 
 	return &result
 }

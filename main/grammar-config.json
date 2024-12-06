@@ -1,0 +1,41 @@
+{
+  "terminals": {
+    "symbolTokens": [
+      { "type": "{", "pattern": "(\\{)" },
+      { "type": "}", "pattern": "(\\})" },
+      { "type": "[", "pattern": "(\\[)" },
+      { "type": "]", "pattern": "(\\])" },
+      { "type": ":", "pattern": "(:)" },
+      { "type": ",", "pattern": "(,)" }
+    ],
+    "keywordTokens": [
+      { "type": "true", "pattern": "(true)" },
+      { "type": "false", "pattern": "(false)" },
+      { "type": "null", "pattern": "(null)" }
+    ],
+    "genericTokens": [
+      { "type": "str_lit", "pattern": "\"((\\.|[^\"])*)\"" },
+      { "type": "num_lit", "pattern": "(-?\\d+(\\.\\d+)?)" }
+    ]
+  },
+  "nonTerminals": {
+    "VALUE": [
+      ["OBJECT"],
+      ["ARRAY"],
+      ["true"],
+      ["false"],
+      ["null"],
+      ["str_lit"],
+      ["num_lit"]
+    ],
+    "OBJECT": [["{", "ENTRIES?", "}"]],
+    "ENTRIES?": [["ENTRY", "ENTRY?"], ["EPSILON"]],
+    "ENTRY?": [[",", "ENTRY", "ENTRY?"], ["EPSILON"]],
+    "ENTRY": [["KEY", ":", "VALUE"]],
+    "KEY": [["str_lit"], ["num_lit"]],
+    "ARRAY": [["[", "ELEMENTS?, "], ["]"]],
+    "ELEMENTS?": [["VALUE", "ELEMENT?"], ["EPSILON"]],
+    "ELEMENT?": [[",", "VALUE", "ELEMENT?"], ["EPSILON"]]
+  },
+  "startSymbol": "VALUE"
+}

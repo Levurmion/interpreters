@@ -1,0 +1,15 @@
+{
+  "terminals": {
+    "symbolTokens": [
+      { "type": "a", "pattern": "(a)" },
+      { "type": "b", "pattern": "(b)" }
+    ],
+    "keywordTokens": [],
+    "genericTokens": []
+  },
+  "nonTerminals": {
+    "S": [["A", "b"], ["b"]],
+    "A": [["a"]]
+  },
+  "startSymbol": "S"
+}

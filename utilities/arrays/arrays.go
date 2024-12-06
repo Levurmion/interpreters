@@ -17,3 +17,12 @@ func Filter[A any](array []A, predicate func(A) bool) []A {
 	}
 	return result
 }
+
+func FindFirstIdx[A any](array []A, predicate func(A) bool) int {
+	for idx, val := range array {
+		if (predicate(val)) {
+			return idx
+		}
+	}
+	return -1
+}
