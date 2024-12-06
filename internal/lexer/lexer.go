@@ -3,6 +3,7 @@ package lexer
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"interpreters/utilities/arrays"
 	"io"
 	"os"
@@ -53,7 +54,7 @@ func CreateLexer(config LexerConfigJson) *Lexer {
 }
 
 func CreateLexerFromJsonConfig(path string) (*Lexer, error) {
-	configFile, err := os.Open("./token-config.json")
+	configFile, err := os.Open(path)
     if err != nil {
         return nil, errors.New(`Error opening config file: ` + err.Error())
     }
@@ -92,6 +93,11 @@ func (lex *Lexer) Tokenize(input string) *[]*Token {
 	processed := 0
 	lex.line = 0
 	lex.col = 0
+	tokenGroups := [][]*TokenConfig{
+		lex.symbolTokens,
+		lex.keywordTokens,
+		lex.genericTokens,
+	}
 
 	for processed < len(input) {
 		currInput := input[processed:]
@@ -111,12 +117,6 @@ func (lex *Lexer) Tokenize(input string) *[]*Token {
 		}
 
 		// match symbols, keywords, and then generics - in that order
-		tokenGroups := [][]*TokenConfig{
-			lex.symbolTokens,
-			lex.keywordTokens,
-			lex.genericTokens,
-		}
-
 		var token *Token
 		for _, tokenGroup := range tokenGroups {
 			token = lex.matchTokenGroup(tokenGroup, currInput)
@@ -126,7 +126,8 @@ func (lex *Lexer) Tokenize(input string) *[]*Token {
 		}
 
 		if (token == nil) {
-			panic(`Unrecognized symbol: ` + currInput)
+			message := fmt.Sprintf("Unrecognized symbol at %d:%d", lex.line, lex.col)
+			panic(message)
 		} 
 
 		result = append(result, token)
