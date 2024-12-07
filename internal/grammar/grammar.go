@@ -67,6 +67,10 @@ func NewGrammar(config GrammarConfigJson) *Grammar {
 		}
 	}
 
+	// also add Epsilon and EOF as possible terminals
+	terminals.Add(symbols.Epsilon)
+	terminals.Add(symbols.EOF)
+
 	// load all non-terminals into nonTerminals set
 	for nonTerminal := range config.NonTerminals {
 		nonTerminals.Add(nonTerminal)
@@ -157,8 +161,18 @@ func (g *Grammar) GetProductionsDerivingSymbol(symbol string) []ProductionRule {
 }
 
 func (g *Grammar) DerivesEpsilon(symbol string) bool {
-	productionRules := g.GetProductionsDerivingSymbol(symbol)
-	return arrays.FindFirstIdx(productionRules, func(productionRule ProductionRule) bool {
-		return productionRule.Production[0] == symbols.Epsilon
-	}) >= 0
+	// If symbol is not a non-terminal, it never derives epsilon
+	if !g.NonTerminals.Has(symbol) {
+		return false
+	}
+
+	productionRules := g.GetProductionsOfNonTerminal(symbol)
+	for _, productionRule := range productionRules {
+		// Check if this production is a single epsilon
+		if len(productionRule.Production) == 1 && productionRule.Production[0] == symbols.Epsilon {
+			return true
+		}
+	}
+
+	return false
 }

@@ -26,3 +26,12 @@ func FindFirstIdx[A any](array []A, predicate func(A) bool) int {
 	}
 	return -1
 }
+
+func FindFirst[A any](array []A, predicate func(A) bool) *A {
+	itemIdx := FindFirstIdx(array, predicate)
+	if (itemIdx > -1) {
+		return &array[itemIdx]
+	} else {
+		return nil
+	}
+}

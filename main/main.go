@@ -15,6 +15,9 @@ func main() {
 	}
 
 	FIRSTSets := firstfollow.ComputeFIRSTSets(Grammar)
-	pretty := spew.Sdump(FIRSTSets)
-	fmt.Println(pretty)
+	FOLLOWSets := firstfollow.ComputeFOLLOWSets(Grammar, FIRSTSets)
+	// FIRSTPretty := spew.Sdump(FIRSTSets)
+	FOLLOWPretty := spew.Sdump(FOLLOWSets)
+	// fmt.Println(FIRSTPretty)
+	fmt.Println(FOLLOWPretty)
 }

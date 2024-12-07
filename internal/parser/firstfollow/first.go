@@ -2,7 +2,6 @@ package firstfollow
 
 import (
 	"interpreters/internal/grammar"
-	"interpreters/internal/symbols"
 	"interpreters/utilities/sets"
 )
 
@@ -14,7 +13,7 @@ func ComputeFIRSTSets(grammar *grammar.Grammar) map[string]sets.Set[string] {
 		FIRSTSets[nonTerminal] = sets.NewEmptySet[string]()
 	}
 	for _, terminal := range grammar.Terminals.GetItems() {
-		FIRSTSets[terminal] = sets.NewSet[string](terminal)
+		FIRSTSets[terminal] = sets.NewSet(terminal)
 	}
 
 	// Computes the `FIRST(symbol)` and returns whether `FIRST(symbol)`
@@ -26,13 +25,9 @@ func ComputeFIRSTSets(grammar *grammar.Grammar) map[string]sets.Set[string] {
 
 		for _, productionRule := range productionRules {
 			for _, ruleSymbol := range productionRule.Production {
-				if ruleSymbol == symbols.Epsilon {
-					break	// ignore this rule
-				} else {
-					// ruleSymbol is the current leading symbol: FIRST(ruleSymbol) in FIRST(symbol)
-					ruleSymbolFIRSTSet := FIRSTSets[ruleSymbol]
-					newSymbolFIRSTSet = newSymbolFIRSTSet.Union(ruleSymbolFIRSTSet)
-				}
+				// ruleSymbol is the current leading symbol: FIRST(ruleSymbol) in FIRST(symbol)
+				ruleSymbolFIRSTSet := FIRSTSets[ruleSymbol]
+				newSymbolFIRSTSet = newSymbolFIRSTSet.Union(ruleSymbolFIRSTSet)
 
 				if (!grammar.DerivesEpsilon(ruleSymbol) || grammar.Terminals.Has(ruleSymbol)) {
 					// leading symbol does not derive Epsilon or is a terminal: no other possible 
@@ -47,6 +42,7 @@ func ComputeFIRSTSets(grammar *grammar.Grammar) map[string]sets.Set[string] {
 		return newSymbolFIRSTSet.Size() > symbolFIRSTSet.Size()
 	}
 
+	// only stop refreshing FIRSTs when no more changes are made
 	changed := true
 	for changed {
 		changed = false
