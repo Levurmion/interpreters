@@ -22,6 +22,15 @@ func NewEmptySet[T string|int|uint]() Set[T] {
 
 // ----- SET METHODS -----
 
+// Returns a deep copy of this `Set`.
+func (s *Set[T]) Clone() Set[T] {
+	return NewSet(s.GetItems()...)
+}
+
+func (s *Set[T]) Size() int {
+	return len(s.items)
+}
+
 func (s *Set[T]) Add(item T) {
 	s.items[item] = true
 }

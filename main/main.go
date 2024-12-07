@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"interpreters/internal/grammar"
+	"interpreters/internal/parser/firstfollow"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func main() {
@@ -11,5 +14,7 @@ func main() {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println(Grammar.GetProductionsDerivingSymbol("str"))
+	FIRSTSets := firstfollow.ComputeFIRSTSets(Grammar)
+	pretty := spew.Sdump(FIRSTSets)
+	fmt.Println(pretty)
 }

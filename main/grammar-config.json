@@ -33,7 +33,7 @@
     "ENTRY?": [[",", "ENTRY", "ENTRY?"], ["EPSILON"]],
     "ENTRY": [["KEY", ":", "VALUE"]],
     "KEY": [["str_lit"], ["num_lit"]],
-    "ARRAY": [["[", "ELEMENTS?, "], ["]"]],
+    "ARRAY": [["[", "ELEMENTS?", "]"]],
     "ELEMENTS?": [["VALUE", "ELEMENT?"], ["EPSILON"]],
     "ELEMENT?": [[",", "VALUE", "ELEMENT?"], ["EPSILON"]]
   },
