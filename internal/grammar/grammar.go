@@ -7,9 +7,8 @@ import (
 	"interpreters/internal/lexer"
 	"interpreters/internal/symbols"
 	"interpreters/utilities/arrays"
+	"interpreters/utilities/files"
 	"interpreters/utilities/sets"
-	"io"
-	"os"
 )
 
 type GrammarConfigJson struct {
@@ -31,6 +30,13 @@ type Grammar struct {
 
 	productionRulesIdx 			map[string]*[]uint
 	productionRulesInvertedIdx 	map[string]*[]uint
+}
+
+func NewAugmentedGrammar(config GrammarConfigJson) *Grammar {
+	// add symbols.AugmentedStart
+	config.NonTerminals[symbols.AugmentedStart] = [][]string{{config.StartSymbol}}
+	config.StartSymbol = symbols.AugmentedStart
+	return NewGrammar(config)
 }
 
 func NewGrammar(config GrammarConfigJson) *Grammar {
@@ -59,11 +65,6 @@ func NewGrammar(config GrammarConfigJson) *Grammar {
 	for _, terminal := range terminals.GetItems() {
 		if (terminal == symbols.EOF || terminal == symbols.Dot) {
 			panic(fmt.Sprintf("Grammar cannot use the reserved symbol: %s", terminal))
-		}
-	}
-	for _, nonTerminal := range nonTerminals.GetItems() {
-		if (nonTerminal == symbols.AugmentedStart) {
-			panic(fmt.Sprintf("Grammar cannot use the reserved symbol: %s", nonTerminal))
 		}
 	}
 
@@ -113,17 +114,26 @@ func NewGrammar(config GrammarConfigJson) *Grammar {
 	}
 }
 
-func NewGrammarFromJsonConfig(path string) (*Grammar, error) {
-	configFile, err := os.Open(path)
-    if err != nil {
-        return nil, errors.New(`Error opening config file: ` + err.Error())
-    }
-    defer configFile.Close()
+func NewAugmentedGrammarFromJsonConfig(path string) (*Grammar, error) {
+	bytes, err := files.OpenFileToByteStream(path)
+	if err != nil {
+		return nil, err
+	}
 
-	bytes, err := io.ReadAll(configFile)
+	var data GrammarConfigJson
+	err = json.Unmarshal(bytes, &data)
     if err != nil {
-        return nil, errors.New(`Error reading config file: ` + err.Error())
+		return nil, errors.New(`Error unmarshalling config file: ` + err.Error())
     }
+
+	return NewAugmentedGrammar(data), nil
+}
+
+func NewGrammarFromJsonConfig(path string) (*Grammar, error) {
+	bytes, err := files.OpenFileToByteStream(path)
+	if err != nil {
+		return nil, err
+	}
 
 	var data GrammarConfigJson
 	err = json.Unmarshal(bytes, &data)
@@ -176,3 +186,4 @@ func (g *Grammar) DerivesEpsilon(symbol string) bool {
 
 	return false
 }
+

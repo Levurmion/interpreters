@@ -3,7 +3,6 @@ package firstfollow
 import (
 	"interpreters/internal/grammar"
 	"interpreters/internal/symbols"
-	"interpreters/utilities/arrays"
 	"interpreters/utilities/sets"
 )
 
@@ -30,35 +29,33 @@ func ComputeFOLLOWSets(grammar *grammar.Grammar, FIRSTSets map[string]sets.Set[s
 			production := productionRule.Production
 			nonTerminalFOLLOWSet := FOLLOWSets[productionNonTerminal]
 
-			// find the position of this `symbol` in the production rule that derives it
-			symbolIdx := arrays.FindFirstIdx(production, func (ruleSymbol string) bool {
-				return ruleSymbol == symbol
-			})
+			// Iterate over all occurrences of 'symbol' in the production
+			for idx := 0; idx < len(production); idx++ {
+				if production[idx] != symbol {
+					continue
+				}
 
-			if symbolIdx < 0 {
-				continue
-			}
+				// If 'symbol' is at the end of the production, add FOLLOW(LHS) to FOLLOW(symbol)
+				if idx == len(production)-1 {
+					newSymbolFOLLOWSet = newSymbolFOLLOWSet.Union(nonTerminalFOLLOWSet)
+				} else {
+					// The symbol that follows 'symbol'
+					nextSymbol := production[idx+1]
+					nextSymbolFIRSTSet := FIRSTSets[nextSymbol]
 
-			// `symbol` occurs last in the `production`
-			if symbolIdx == len(production) - 1 {
-				newSymbolFOLLOWSet = newSymbolFOLLOWSet.Union(nonTerminalFOLLOWSet)
-				continue
-			}
+					// Add FIRST(nextSymbol) to FOLLOW(symbol)
+					newSymbolFOLLOWSet = newSymbolFOLLOWSet.Union(nextSymbolFIRSTSet)
 
-			// The `FOLLOWSymbol` is the symbol directly to the right of `symbol`
-			FOLLOWSymbol := production[symbolIdx + 1]
-			FOLLOWSymbolFIRSTSet := FIRSTSets[FOLLOWSymbol]
-			
-			// `FIRST(FOLLOWSymbol)` is always in `FOLLOW(symbol)`
-			newSymbolFOLLOWSet = newSymbolFOLLOWSet.Union(FOLLOWSymbolFIRSTSet)
-			
-			if grammar.DerivesEpsilon(FOLLOWSymbol) && grammar.NonTerminals.Has(FOLLOWSymbol) {
-				// `FOLLOWSymbol` can derive Epsilon: the `FOLLOW(FOLLOWSymbol)` is in `FOLLOW(symbol)`
-				newSymbolFOLLOWSet = newSymbolFOLLOWSet.Union(nonTerminalFOLLOWSet)
+					// If nextSymbol can derive epsilon (and is a NonTerminal),
+					// then FOLLOW(LHS) also goes into FOLLOW(symbol)
+					if grammar.NonTerminals.Has(nextSymbol) && grammar.DerivesEpsilon(nextSymbol) {
+						newSymbolFOLLOWSet = newSymbolFOLLOWSet.Union(nonTerminalFOLLOWSet)
+					}
+				}
 			}
 		}
 
-		// always exclude Epsilon from FOLLOWSets
+		// Epsilon should never appear in FOLLOW sets
 		newSymbolFOLLOWSet.Delete(symbols.Epsilon)
 		FOLLOWSets[symbol] = newSymbolFOLLOWSet
 		return newSymbolFOLLOWSet.Size() > symbolFOLLOWSet.Size()
