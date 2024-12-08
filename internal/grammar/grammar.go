@@ -25,6 +25,7 @@ type ProductionRule struct {
 type Grammar struct {
 	Terminals 					sets.Set[string]
 	NonTerminals 				sets.Set[string]
+	AllSymbols					sets.Set[string]
 	StartSymbol					string
 	ProductionRules				map[uint]ProductionRule
 
@@ -50,7 +51,7 @@ func NewGrammar(config GrammarConfigJson) *Grammar {
 	// maps any symbol -> production rule containing symbol
 	enumeratedProductionRulesInvertedIdx := make(map[string]*[]uint)
 
-	// load all token types into terminals set
+	// load all token types uinto terminals set
 	for _, token := range config.Terminals.SymbolTokens {
 		terminals.Add(token.Type)
 	}
@@ -72,7 +73,7 @@ func NewGrammar(config GrammarConfigJson) *Grammar {
 	terminals.Add(symbols.Epsilon)
 	terminals.Add(symbols.EOF)
 
-	// load all non-terminals into nonTerminals set
+	// load all non-terminals uinto nonTerminals set
 	for nonTerminal := range config.NonTerminals {
 		nonTerminals.Add(nonTerminal)
 	}
@@ -107,6 +108,7 @@ func NewGrammar(config GrammarConfigJson) *Grammar {
 	return &Grammar{
 		terminals,
 		nonTerminals,
+		terminals.Union(nonTerminals),
 		config.StartSymbol,
 		enumeratedProductionRules,
 		enumeratedProductionRulesIdx,
@@ -167,6 +169,42 @@ func (g *Grammar) GetProductionsDerivingSymbol(symbol string) []ProductionRule {
 		})
 	} else {
 		return []ProductionRule{}
+	}
+}
+
+// Find the ID of a production rule as registered in the `Grammar`. Returns -1 if
+// the queried production rule does not exist.
+func (g *Grammar) GetProductionId(LHS string, RHS []string) (int, error) {
+	var possibleIds sets.Set[uint]
+
+	// get all production IDs for the non-terminal
+	pForwardIndex, exists := g.productionRulesIdx[LHS]
+	if (!exists) {
+		return -1, fmt.Errorf(`Non-terminal: %s does not exist in the specified grammar.`, LHS)
+	} else {
+		forwardIndex := *pForwardIndex
+		possibleIds = sets.NewSet(forwardIndex...)
+	}
+
+	// get all possible production IDs for RHS symbols
+	for _, symbol :=  range RHS {
+		pInvertedIndex, exists := g.productionRulesInvertedIdx[symbol]
+		if (!exists) {
+			return -1, fmt.Errorf(`symbol: %s does not exist in the specified grammar`, symbol)
+		} else {
+			invertedIndex := *pInvertedIndex
+			invertedIndexSet := sets.NewSet(invertedIndex...)
+			possibleIds = possibleIds.Intersection(invertedIndexSet)
+		}
+	}
+
+	// there should be no ambiguity in resolving the ID of a production
+	if possibleIds.Size() > 1 {
+		return -1, errors.New(`production rule maps to multiple ambiguous IDs`)
+	} else if possibleIds.Size() == 0 {
+		return -1, errors.New(`production rule not found in the specified grammar`)
+	} else {
+		return int(possibleIds.GetItems()[0]), nil
 	}
 }
 

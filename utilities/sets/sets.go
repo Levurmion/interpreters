@@ -74,3 +74,16 @@ func (this *Set[T]) Intersection(other Set[T]) Set[T] {
 	}
 	return newSet
 }
+
+func (this *Set[T]) IsEqual(other Set[T]) bool {
+	if this.Size() != other.Size() {
+		return false
+	} else {
+		for item := range this.items {
+			if (!other.Has(item)) {
+				return false
+			}
+		}
+		return true
+	}
+}
