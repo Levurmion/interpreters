@@ -1,11 +1,11 @@
 package firstfollow
 
 import (
-	"interpreters/internal/grammar"
+	"interpreters/internal/parser/lr1grammar"
 	"interpreters/utilities/sets"
 )
 
-func ComputeFIRSTSets(grammar *grammar.Grammar) map[string]sets.Set[string] {
+func ComputeFIRSTSets(grammar *lr1grammar.Grammar) map[string]sets.Set[string] {
 	FIRSTSets := make(map[string]sets.Set[string])
 
 	// intialize FIRSTSets

@@ -1,4 +1,4 @@
-package grammar
+package lr1grammar
 
 import (
 	"encoding/json"
@@ -224,4 +224,7 @@ func (g *Grammar) DerivesEpsilon(symbol string) bool {
 
 	return false
 }
+
+
+
 

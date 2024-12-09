@@ -1,4 +1,4 @@
-package lr1_items
+package lr1item
 
 import (
 	"errors"

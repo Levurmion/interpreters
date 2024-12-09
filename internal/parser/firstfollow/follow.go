@@ -1,12 +1,12 @@
 package firstfollow
 
 import (
-	"interpreters/internal/grammar"
+	"interpreters/internal/parser/lr1grammar"
 	"interpreters/internal/symbols"
 	"interpreters/utilities/sets"
 )
 
-func ComputeFOLLOWSets(grammar *grammar.Grammar, FIRSTSets map[string]sets.Set[string]) map[string]sets.Set[string] {
+func ComputeFOLLOWSets(grammar *lr1grammar.Grammar, FIRSTSets map[string]sets.Set[string]) map[string]sets.Set[string] {
 	FOLLOWSets := make(map[string]sets.Set[string])
 	grammarNonTerminals := grammar.NonTerminals.GetItems()
 

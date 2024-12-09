@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"interpreters/internal/grammar"
-	"interpreters/internal/parser/lr1_items"
+	"interpreters/internal/parser/lr1grammar"
+	"interpreters/internal/parser/lr1item"
 	"interpreters/internal/symbols"
 	"interpreters/utilities/sets"
 
@@ -11,14 +11,14 @@ import (
 )
 
 func main() {
-	Grammar, err := grammar.NewAugmentedGrammarFromJsonConfig("./grammar-config.json")
+	Grammar, err := lr1grammar.NewAugmentedGrammarFromJsonConfig("./grammar-config.json")
 	if (err != nil) {
 		fmt.Println(err.Error())
 	}
 	
 	fmt.Println(spew.Sdump(Grammar.ProductionRules))
 
-	lr1Item, err := lr1_items.NewLR1Item(
+	lr1Item, err := lr1item.NewLR1Item(
 		"OBJECT", 
 		[]string{"{", "ENTRIES?", "}"}, 
 		0, 
