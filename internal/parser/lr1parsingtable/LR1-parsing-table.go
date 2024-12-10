@@ -11,20 +11,18 @@ import (
 type ParsingTable struct {
 	Grammar *lr1grammar.Grammar
 	FIRSTSets map[string]sets.Set[string]
-
 	table map[string]map[string]ParserAction
 }
 
 func NewLR1ParsingTable(grammar *lr1grammar.Grammar) *ParsingTable {
 	FIRSTSets := firstfollow.ComputeFIRSTSets(grammar)
 	table := make(map[string]map[string]ParserAction)
+
 	parsingTable := ParsingTable{
 		grammar,
 		FIRSTSets,
 		table,
 	}
-
-	// initialize table with the first item
 
 	return &parsingTable
 }

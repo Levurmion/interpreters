@@ -61,6 +61,10 @@ func (item *LR1Item) GetNextSymbol() string {
 	}
 }
 
+func (item *LR1Item) ProductionIsComplete() bool {
+	return item.GetNextSymbol() == symbols.Epsilon
+}
+
 // Retrieves the context sequence for the next symbol in the production rule.
 func (item *LR1Item) GetContextForNextSymbol() []string {
 	if item.GetNextSymbol() == symbols.Epsilon {
